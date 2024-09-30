@@ -2,6 +2,14 @@
 
 This Go server allows you to upload multiple images and interlace them for lenticular printing. The server uses the Gorilla Mux router and the `disintegration/imaging` package for image processing.
 
+![Input Image 1](inputs/image1.jpg)
+![Input Image 2](inputs/image2.jpg)
+![Input Image 3](inputs/image3.jpg)
+![Input Image 4](inputs/image4.jpg)
+
+
+![Result Image](result/1727714386077.png)
+
 ## Features
 
 - Upload multiple images
@@ -75,4 +83,3 @@ curl -X POST -F "images=@path_to_image1.jpg" -F "images=@path_to_image2.jpg" -F 
 
 - [Gorilla Mux](https://github.com/gorilla/mux) for routing
 - [disintegration/imaging](https://github.com/disintegration/imaging) for image processing
-```
