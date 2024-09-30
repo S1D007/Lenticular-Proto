@@ -17,13 +17,17 @@ type ErrorResponse struct {
 }
 
 func interlaceImages(images []image.Image, stripWidth int) (image.Image, error) {
+	// width of the 1st image as a reference frame for other images
 	width := images[0].Bounds().Dx()
+	// height of the 1st image as a reference frame for other images
 	height := images[0].Bounds().Dy()
 
-	interlaced := image.NewRGBA(image.Rect(0, 0, width, height))
+	interlaced := image.NewNRGBA(image.Rect(0, 0, width, height))
 	for x := 0; x < width; x++ {
+		// calculate the index of the image to take the pixel from
 		imgIndex := (x / stripWidth) % len(images)
 		for y := 0; y < height; y++ {
+			// set the pixel from the image like a strip with the width of stripWidth
 			interlaced.Set(x, y, images[imgIndex].At(x, y))
 		}
 	}
