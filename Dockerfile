@@ -10,7 +10,7 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o lenticular .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o lenticular .
 
 # Stage 2: Build the final image
 FROM alpine:latest
