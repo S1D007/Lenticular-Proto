@@ -10,6 +10,7 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 type ErrorResponse struct {
@@ -87,6 +88,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	router := mux.NewRouter()
+	router.Use(cors.Default().Handler)
 	router.HandleFunc("/upload", uploadHandler).Methods("POST")
 
 	fmt.Println("Server started at :8080")
