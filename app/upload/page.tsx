@@ -6,7 +6,7 @@ import React from "react";
 import { Result } from "./_components/result-card";
 
 function page() {
-  const { generate, result, loading } = useLenticularStore();
+  const { generate, result, loading, images } = useLenticularStore();
   return (
     <div className="h-screen flex items-center justify-center w-full flex-col px-4">
       {result ? (
@@ -14,7 +14,10 @@ function page() {
       ) : (
         <>
           <FileUpload />
-          <RainbowButton disabled={loading} onClick={() => generate()}>
+          <RainbowButton
+            disabled={images.length === 0 || loading}
+            onClick={() => generate()}
+          >
             {loading ? "Generating..." : "Generate Lenticular Image"}
           </RainbowButton>
         </>

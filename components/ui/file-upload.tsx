@@ -29,17 +29,32 @@ const secondaryVariant = {
 export const FileUpload = () => {
   const { addImages, images, removeImage } = useLenticularStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageDimensions, setImageDimensions] = useState<
+    { width: number; height: number }[]
+  >([]);
 
-  const handleFileChange = useCallback((newFiles: File[]) => {
+  const handleFileChange = (newFiles: File[]) => {
+    const newImageDimensions: { width: number; height: number }[] = [];
+
+    newFiles.forEach((file) => {
+      const img = new Image();
+      img.onload = () => {
+        newImageDimensions.push({ width: img.width, height: img.height });
+        if (newImageDimensions.length === newFiles.length) {
+          setImageDimensions((prev) => [...prev, ...newImageDimensions]);
+        }
+      };
+      img.src = URL.createObjectURL(file);
+    });
+
     addImages([...images, ...newFiles]);
-  }, [images, addImages]);
-  
-  const handleDeleteFile = useCallback((fileToDelete: File) => {
-    const newFiles = images.filter((file) => file !== fileToDelete);
-    removeImage(images.indexOf(fileToDelete));
-    addImages(newFiles);
-  }, [images, removeImage, addImages]);
-  
+  };
+
+  const handleDeleteFile = (idx: number) => {
+    removeImage(idx);
+    setImageDimensions((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   const handleClick = useCallback(() => {
     fileInputRef.current?.click();
   }, []);
@@ -48,9 +63,12 @@ export const FileUpload = () => {
     multiple: true,
     noClick: true,
     maxFiles: 4,
+    accept: {
+      image: ["image/jpeg", "image/png"],
+    },
     onDrop: handleFileChange,
     onDropRejected: (error) => {
-      console.log(error);
+      alert(error[0].errors[0].message);
     },
   });
 
@@ -68,6 +86,7 @@ export const FileUpload = () => {
           id="file-upload-handle"
           type="file"
           multiple
+          accept="image/png, image/jpeg"
           onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
           className="hidden"
         />
@@ -112,7 +131,7 @@ export const FileUpload = () => {
                     <motion.button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDeleteFile(file);
+                        handleDeleteFile(idx);
                       }}
                       className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-600"
                     >
@@ -125,7 +144,7 @@ export const FileUpload = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       layout
-                      className="px-1 py-0.5 rounded-md bg-gray-100 dark:bg-neutral-800 "
+                      className="px-1 py-0.5 rounded-md bg-gray-100 dark:bg-neutral-800"
                     >
                       {file.type}
                     </motion.p>
@@ -138,6 +157,17 @@ export const FileUpload = () => {
                       modified{" "}
                       {new Date(file.lastModified).toLocaleDateString()}
                     </motion.p>
+
+                    {imageDimensions[idx] && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        layout
+                      >
+                        {imageDimensions[idx].width} x{" "}
+                        {imageDimensions[idx].height} px
+                      </motion.p>
+                    )}
                   </div>
                 </motion.div>
               ))}

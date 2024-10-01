@@ -2,6 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 
 const API_URL = "https://lenticular-api.gokapturehub.com";
+// const API_URL = "http://localhost:8081";
 
 type LenticularState = {
   images: File[];
@@ -21,10 +22,17 @@ const useLenticularStore = create<LenticularState & LenticularActions>(
     images: [],
     result: null,
     loading: false,
-    addImages: (images: File[]) =>
-      set((state) => ({ images: [...state.images, ...images] })),
-    removeImage: (idx: number) =>
-      set((state) => ({ images: state.images.filter((_, i) => i !== idx) })),
+    addImages: (images: File[]) => {
+      set({ images });
+    },
+    removeImage: (idx: number) => {
+      const prevImages = useLenticularStore.getState().images;
+      const newImages = prevImages.filter((_, i) => {
+        console.log(i, idx);
+        return i !== idx;
+      });
+      set({ images: newImages });
+    },
     generate: async () => {
       try {
         set({ loading: true });
@@ -41,8 +49,9 @@ const useLenticularStore = create<LenticularState & LenticularActions>(
 
         const imageUrl = URL.createObjectURL(data);
         set({ result: imageUrl, images: [], loading: false });
-      } catch (error) {
-        console.error(error);
+      } catch (error: any) {
+        console.error(error.response.data);
+        set({ loading: false });
       }
     },
     downloadResult: () => {
