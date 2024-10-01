@@ -47,6 +47,7 @@ export const FileUpload = () => {
   const { getRootProps, isDragActive } = useDropzone({
     multiple: true,
     noClick: true,
+    maxFiles: 4,
     onDrop: handleFileChange,
     onDropRejected: (error) => {
       console.log(error);
@@ -66,6 +67,7 @@ export const FileUpload = () => {
           ref={fileInputRef}
           id="file-upload-handle"
           type="file"
+          multiple
           onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
           className="hidden"
         />
@@ -157,10 +159,10 @@ export const FileUpload = () => {
                   <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-neutral-600 flex flex-col items-center"
+                    className="text-gray-400 flex flex-col items-center"
                   >
-                    Drop it
                     <IconUpload className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
+                    Drop it
                   </motion.p>
                 ) : (
                   <IconUpload className="h-4 w-4 text-neutral-600 dark:text-neutral-300" />
