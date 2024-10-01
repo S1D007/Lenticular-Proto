@@ -1,8 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 
-// const API_URL = "http://local";
-const API_URL = "http://localhost:8081";
+const API_URL = "https://lenticular-api.gokapturehub.com";
 
 type LenticularState = {
   images: File[];
