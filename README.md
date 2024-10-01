@@ -47,7 +47,7 @@ This Go server allows you to upload multiple images and interlace them for lenti
    go run main.go
    ```
 
-   The server will start on `http://localhost:8080`.
+   The server will start on `http://localhost:8081`.
 
 ## API Endpoint
 
@@ -63,7 +63,7 @@ This endpoint allows you to upload images and specify the strip width for interl
 **Example Request Using curl:**
 
 ```bash
-curl -X POST -F "images=@path_to_image1.jpg" -F "images=@path_to_image2.jpg" -F "stripWidth=10.5" http://localhost:8080/upload
+curl -X POST -F "images=@path_to_image1.jpg" -F "images=@path_to_image2.jpg" -F "stripWidth=10.5" http://localhost:8081/upload
 ```
 
 **Response:**

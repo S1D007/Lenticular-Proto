@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 
 // const API_URL = "http://local";
-const API_URL = "http://localhost:8080";
+const API_URL = "http://localhost:8081";
 
 type LenticularState = {
   images: File[];

@@ -91,6 +91,6 @@ func main() {
 	router.Use(cors.Default().Handler)
 	router.HandleFunc("/upload", uploadHandler).Methods("POST")
 
-	fmt.Println("Server started at :8080")
-	http.ListenAndServe(":8080", router)
+	fmt.Println("Server started at :8081")
+	http.ListenAndServe(":8081", router)
 }

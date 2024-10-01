@@ -23,4 +23,4 @@ COPY --from=builder /app/lenticular .
 
 CMD ["./lenticular"]
 
-EXPOSE 8080
+EXPOSE 8081
