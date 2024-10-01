@@ -13,7 +13,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o lenticular .
 
 # Stage 2: Build the final image
-FROM alpine:latest
+FROM alpine:latest as runner
 
 RUN apk --no-cache add ca-certificates
 

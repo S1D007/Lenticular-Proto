@@ -17,11 +17,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: builder
+      target: runner
     ports:
       - "8080:8080"
     networks:
       - app-network
+    restart: always
+    command: ["./lenticular"]
 
 networks:
   app-network:
