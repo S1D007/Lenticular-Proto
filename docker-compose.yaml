@@ -1,0 +1,28 @@
+services:
+  nextjs-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      target: runner
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - lenticular
+    networks:
+      - app-network
+
+  lenticular:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
