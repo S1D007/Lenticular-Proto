@@ -75,7 +75,7 @@ export const FileUpload = () => {
   const memoizedImages = useMemo(() => images, [images]);
 
   return (
-    <div className="w-full" {...getRootProps()}>
+    <div className="w-full m-auto" {...getRootProps()}>
       <motion.div
         onClick={handleClick}
         whileHover="animate"
@@ -100,7 +100,7 @@ export const FileUpload = () => {
           <p className="relative z-20 font-sans font-normal text-neutral-400 dark:text-neutral-400 text-base mt-2">
             Drag or drop your files here or click to upload
           </p>
-          <div className="relative w-full mt-10 max-w-xl mx-auto">
+          <div className="relative w-full mt-10 max-w-xl mx-auto  max-h-[calc(100vh-15rem)] overflow-y-auto">
             {memoizedImages.length > 0 &&
               memoizedImages.map((file, idx) => (
                 <motion.div

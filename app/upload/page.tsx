@@ -8,7 +8,7 @@ import { Result } from "./_components/result-card";
 function page() {
   const { generate, result, loading, images } = useLenticularStore();
   return (
-    <div className="h-screen flex items-center justify-center w-full flex-col px-4">
+    <div className="h-full w-full flex items-center justify-center  flex-col">
       {result ? (
         <Result />
       ) : (
