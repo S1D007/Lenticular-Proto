@@ -17,7 +17,6 @@ type ErrorResponse struct {
 	Error string `json:"error"`
 }
 
-// Function to find the smallest width and height from the images
 func findMinDimensions(images []image.Image) (int, int) {
 	minWidth, minHeight := images[0].Bounds().Dx(), images[0].Bounds().Dy()
 
@@ -62,16 +61,25 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stripWidthStr := r.FormValue("stripWidth")
-	stripWidth, err := strconv.Atoi(stripWidthStr)
-	if err != nil || stripWidth <= 0 {
-		stripWidth = 8
+	// Parse LPI from form data (optional, defaults to 10)
+	lpiStr := r.FormValue("lpi")
+	lpi, err := strconv.Atoi(lpiStr)
+	if err != nil || lpi <= 0 {
+		lpi = 50 // Default LPI hai
 	}
+
+	dpiStr := r.FormValue("dpi")
+	dpi, err := strconv.Atoi(dpiStr)
+	if err != nil || dpi <= 0 {
+		dpi = 96 // This is Default DPI
+	}
+
+	stripWidth := dpi / lpi
+	fmt.Printf("Calculated strip width: %d pixels per strip\n", stripWidth)
 
 	files := r.MultipartForm.File["images"]
 	var loadedImages []image.Image
 
-	// Load and decode images
 	for _, fileHeader := range files {
 		file, err := fileHeader.Open()
 		if err != nil {
@@ -90,17 +98,14 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		loadedImages = append(loadedImages, img)
 	}
 
-	// Find the smallest width and height
 	minWidth, minHeight := findMinDimensions(loadedImages)
 
-	// Resize all images to the smallest width and height
 	var resizedImages []image.Image
 	for _, img := range loadedImages {
 		resizedImg := imaging.Resize(img, minWidth, minHeight, imaging.Lanczos)
 		resizedImages = append(resizedImages, resizedImg)
 	}
 
-	// Interlace the resized images
 	interlacedImg, err := interlaceImages(resizedImages, stripWidth)
 	if err != nil {
 		fmt.Println(err)
@@ -108,7 +113,6 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return the interlaced image as a PNG
 	w.Header().Set("Content-Type", "image/png")
 	if err := png.Encode(w, interlacedImg); err != nil {
 		fmt.Println(err)
@@ -121,7 +125,6 @@ func main() {
 	router := mux.NewRouter()
 	router.Use(cors.Default().Handler)
 	router.HandleFunc("/upload", uploadHandler).Methods("POST")
-
 	fmt.Println("Server started at :8081")
 	http.ListenAndServe(":8081", router)
 }
