@@ -33,14 +33,15 @@ func findMinDimensions(images []image.Image) (int, int) {
 	return minWidth, minHeight
 }
 
-func interlaceImages(images []image.Image, stripWidth int) (image.Image, error) {
+func interlaceImages(images []image.Image, stripHeight int) (image.Image, error) {
 	width := images[0].Bounds().Dx()
 	height := images[0].Bounds().Dy()
 
 	interlaced := image.NewNRGBA(image.Rect(0, 0, width, height))
-	for x := 0; x < width; x++ {
-		imgIndex := (x / stripWidth) % len(images)
-		for y := 0; y < height; y++ {
+
+	for y := 0; y < height; y++ {
+		imgIndex := (y / stripHeight) % len(images)
+		for x := 0; x < width; x++ {
 			interlaced.Set(x, y, images[imgIndex].At(x, y))
 		}
 	}

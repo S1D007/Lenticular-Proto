@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import axios from "axios";
 
-const API_URL = "https://lenticular-api.gokapturehub.com";
-// const API_URL = "http://localhost:8081";
+// const API_URL = "https://lenticular-api.gokapturehub.com";
+const API_URL = "http://localhost:8081";
 
 type LenticularState = {
   images: File[];
@@ -41,7 +41,7 @@ const useLenticularStore = create<LenticularState & LenticularActions>(
         images.forEach((image) => {
           formData.append("images", image);
         });
-        formData.append("stripWidth", "1");
+        // formData.append("stripWidth", "1");
 
         const { data } = await axios.post(`${API_URL}/upload`, formData, {
           responseType: "blob",
@@ -50,7 +50,7 @@ const useLenticularStore = create<LenticularState & LenticularActions>(
         const imageUrl = URL.createObjectURL(data);
         set({ result: imageUrl, images: [], loading: false });
       } catch (error: any) {
-        console.error(error.response.data);
+        console.error(error.response);
         set({ loading: false });
       }
     },
