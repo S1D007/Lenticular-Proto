@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"image"
-	"image/png"
 	"net/http"
 	"strconv"
+
+	"golang.org/x/image/tiff"
 
 	"github.com/disintegration/imaging"
 	"github.com/gorilla/mux"
@@ -62,23 +63,33 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse LPI from form data (optional, defaults to 10)
+	// Parse LPI from form data (optional, defaults to 50)
 	lpiStr := r.FormValue("lpi")
-	lpi, err := strconv.Atoi(lpiStr)
+	lpi, err := strconv.ParseFloat(lpiStr, 64)
 	if err != nil || lpi <= 0 {
-		lpi = 50 // Default LPI hai
+		lpi = 50
 	}
 
 	dpiStr := r.FormValue("dpi")
-	dpi, err := strconv.Atoi(dpiStr)
+	dpi, err := strconv.ParseFloat(dpiStr, 64)
 	if err != nil || dpi <= 0 {
-		dpi = 96 // This is Default DPI
+		dpi = 96
 	}
 
-	stripWidth := dpi / lpi
-	fmt.Printf("Calculated strip width: %d pixels per strip\n", stripWidth)
+	stripWidthStr := r.FormValue("stripWidth")
+	stripWidth, err := strconv.ParseFloat(stripWidthStr, 64)
+	if err != nil || stripWidth <= 0 {
+		stripWidth = dpi / lpi
+	}
+
+	fmt.Printf("Calculated strip width: %.2f pixels per strip\n", stripWidth)
 
 	files := r.MultipartForm.File["images"]
+	if len(files) == 0 {
+		writeJSONError(w, "No images uploaded", http.StatusBadRequest)
+		return
+	}
+
 	var loadedImages []image.Image
 
 	for _, fileHeader := range files {
@@ -100,6 +111,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	minWidth, minHeight := findMinDimensions(loadedImages)
+	fmt.Printf("Minimum dimensions: %d x %d\n", minWidth, minHeight)
 
 	var resizedImages []image.Image
 	for _, img := range loadedImages {
@@ -107,15 +119,21 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		resizedImages = append(resizedImages, resizedImg)
 	}
 
-	interlacedImg, err := interlaceImages(resizedImages, stripWidth)
+	interlacedImg, err := interlaceImages(resizedImages, int(stripWidth))
 	if err != nil {
 		fmt.Println(err)
 		writeJSONError(w, "Failed to interlace images", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "image/png")
-	if err := png.Encode(w, interlacedImg); err != nil {
+	// **New Step: Scale the interlaced image to double its dimensions**
+	doubleWidth := interlacedImg.Bounds().Dx() * 2
+	doubleHeight := interlacedImg.Bounds().Dy() * 2
+	scaledImg := imaging.Resize(interlacedImg, doubleWidth, doubleHeight, imaging.Lanczos)
+	fmt.Printf("Scaled dimensions: %d x %d\n", doubleWidth, doubleHeight)
+
+	w.Header().Set("Content-Type", "image/tiff")
+	if err := tiff.Encode(w, scaledImg, nil); err != nil {
 		fmt.Println(err)
 		writeJSONError(w, "Failed to encode interlaced image", http.StatusInternalServerError)
 		return

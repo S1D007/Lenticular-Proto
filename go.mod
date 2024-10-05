@@ -8,4 +8,4 @@ require (
 	github.com/rs/cors v1.11.1
 )
 
-require golang.org/x/image v0.20.0 // indirect
+require golang.org/x/image v0.21.0 // indirect

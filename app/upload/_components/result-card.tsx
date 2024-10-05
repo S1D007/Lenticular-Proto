@@ -31,7 +31,7 @@ export function Result() {
             height="1000"
             width="1000"
             className="h-96 object-contain w-full rounded-xl"
-            alt="thumbnail"
+            alt="Image Size is too large to display, DOWNLOAD to view"
           />
         </CardItem>
         <div className="flex justify-between items-center mt-20">
